@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>कल्याण राष्ट्रभक्ति-अङ्क — New Subscription</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+            background:linear-gradient(135deg,#fff9e6 0%,#fffbf0 50%,#fff9e6 100%);
+            min-height:100vh; padding:20px;
+            display:flex; justify-content:center; align-items:flex-start;
+        }
+
+        .container {
+            background:#fff; border-radius:15px;
+            box-shadow:0 10px 40px rgba(218,165,32,0.15);
+            max-width:600px; width:100%; padding:40px;
+            border:2px solid #f5e6c3;
+            animation:fadeIn .5s ease; margin:20px auto;
+        }
+
+        @keyframes fadeIn {
+            from { opacity:0; transform:translateY(-20px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+
+        /* ── HEADER ── */
+        .header-section {
+            margin-bottom:30px; border-bottom:3px solid #d4a017;
+            padding-bottom:20px; display:flex;
+            align-items:center; justify-content:space-between; gap:30px;
+        }
+        .header-text { flex:1; text-align:left; }
+        .header-image { width:var(--logo-size,180px); height:var(--logo-size,180px); object-fit:contain; flex-shrink:0; border-radius:6px; }
+        h1 { color:#c17817; font-size:28px; margin:0 0 10px; font-weight:700; text-shadow:1px 1px 2px rgba(193,120,23,.1); }
+        .sub-heading { color:#8b6914; font-size:16px; font-weight:600; margin-top:5px; text-transform:uppercase; letter-spacing:1px; }
+        .sub-heading-note { color:#666; font-size:13px; font-weight:500; margin-top:8px; font-style:italic; }
+
+        /* ── STEP 1 : PLAN SELECTION ── */
+        .step-title { color:#c17817; font-size:19px; font-weight:700; margin-bottom:6px; }
+        .step-note  { color:#666; font-size:13px; margin-bottom:20px; }
+
+        .plan-list { display:grid; gap:15px; margin-bottom:25px; }
+
+        .plan-card {
+            display:flex; align-items:center; gap:15px;
+            border:2px solid #e0e0e0; border-radius:10px;
+            padding:18px; cursor:pointer; background:#fff;
+            transition:all .25s ease;
+        }
+        .plan-card:hover { border-color:#d4a017; box-shadow:0 6px 18px rgba(212,160,23,.15); transform:translateY(-2px); }
+        .plan-card.selected { border-color:#d4a017; background:#fffbf0; box-shadow:0 0 0 3px rgba(212,160,23,.12); }
+        .plan-card input[type="radio"] { width:20px; height:20px; accent-color:#d4a017; cursor:pointer; flex-shrink:0; }
+
+        .plan-info { flex:1; }
+        .plan-name  { font-size:16px; font-weight:700; color:#333; }
+        .plan-meta  { font-size:13px; color:#777; margin-top:4px; }
+        .plan-price { font-size:22px; font-weight:700; color:#c17817; white-space:nowrap; }
+
+        /* selected plan bar on step 2 */
+        .selected-plan-bar {
+            display:flex; align-items:center; justify-content:space-between; gap:12px;
+            background:#fffbf0; border:2px solid #f5e6c3; border-left:5px solid #d4a017;
+            border-radius:8px; padding:12px 15px; margin-bottom:25px;
+        }
+        .selected-plan-bar .label { font-size:12px; color:#8b6914; font-weight:600; text-transform:uppercase; letter-spacing:.5px; }
+        .selected-plan-bar .value { font-size:16px; font-weight:700; color:#333; margin-top:2px; }
+        .change-plan-btn {
+            background:none; border:1px solid #d4a017; color:#c17817;
+            padding:8px 14px; border-radius:6px; font-size:13px; font-weight:600;
+            cursor:pointer; font-family:inherit; transition:all .25s ease; white-space:nowrap;
+        }
+        .change-plan-btn:hover { background:#d4a017; color:#fff; }
+
+        /* ── FORM ── */
+        .form-group { margin-bottom:20px; }
+        .form-row { display:grid; grid-template-columns:1fr 2fr 2fr; gap:15px; margin-bottom:20px; }
+        .form-row .form-group { margin-bottom:0; }
+
+        label { display:block; margin-bottom:8px; color:#333; font-weight:600; font-size:14px; }
+
+        input, textarea {
+            width:100%; padding:12px; border:2px solid #e0e0e0;
+            border-radius:8px; font-size:14px; transition:all .3s ease;
+            font-family:inherit; background:#fff;
+        }
+        input:disabled { background:#f5f5f5; cursor:not-allowed; color:#666; }
+        input:not(:disabled):focus, textarea:focus {
+            outline:none; border-color:#d4a017;
+            box-shadow:0 0 0 3px rgba(212,160,23,.1);
+        }
+        textarea { resize:vertical; min-height:80px; }
+
+        .char-count { text-align:right; font-size:12px; color:#999; margin-top:5px; }
+
+        .pincode-status { font-size:12px; margin-top:5px; padding:5px; border-radius:4px; }
+        .pincode-status.loading { color:#c17817; background:#fffbf0; border:1px solid #f5e6c3; }
+        .pincode-status.success { color:#28a745; background:#d4edda; }
+        .pincode-status.error   { color:#dc3545; background:#f8d7da; }
+
+        /* ── BUTTONS ── */
+        .submit-btn {
+            width:100%; padding:15px;
+            background:linear-gradient(135deg,#d4a017 0%,#c17817 100%);
+            color:#fff; border:none; border-radius:8px;
+            font-size:16px; font-weight:600; cursor:pointer;
+            transition:all .3s ease; margin-top:10px; font-family:inherit;
+        }
+        .submit-btn:hover:not(:disabled) {
+            transform:translateY(-2px);
+            box-shadow:0 10px 25px rgba(212,160,23,.4);
+            background:linear-gradient(135deg,#e5b01f 0%,#d08820 100%);
+        }
+        .submit-btn:disabled { opacity:.6; cursor:not-allowed; }
+        .required { color:#e74c3c; }
+
+        .hidden { display:none !important; }
+
+        /* ── LOADING ── */
+        .loading-overlay {
+            position:fixed; inset:0; background:rgba(255,249,230,.95);
+            display:flex; align-items:center; justify-content:center;
+            z-index:9999; backdrop-filter:blur(5px);
+        }
+        .loading-spinner {
+            background:#fff; padding:30px 40px; border-radius:10px;
+            text-align:center; box-shadow:0 10px 40px rgba(212,160,23,.3);
+            border:2px solid #f5e6c3;
+        }
+        .spinner {
+            border:4px solid #f5e6c3; border-top:4px solid #d4a017;
+            border-radius:50%; width:40px; height:40px;
+            animation:spin 1s linear infinite; margin:0 auto 15px;
+        }
+        @keyframes spin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+        .loading-spinner p { color:#333; font-weight:500; }
+
+        @media(max-width:600px){
+            .container { padding:25px; }
+            .header-section { flex-direction:column; align-items:center; text-align:center; gap:15px; }
+            .header-text { text-align:center; }
+            .header-image { width:calc(var(--logo-size,180px)*.7); height:calc(var(--logo-size,180px)*.7); }
+            h1 { font-size:22px; }
+            .form-row { grid-template-columns:1fr; gap:0; }
+            .form-row .form-group { margin-bottom:20px; }
+            .plan-card { padding:15px; gap:12px; }
+            .plan-price { font-size:19px; }
+            .selected-plan-bar { flex-direction:column; align-items:flex-start; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- LOADING OVERLAY -->
+    <div class="loading-overlay hidden" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p id="loadingMessage">Processing...</p>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <div class="header-section">
+        <div class="header-text">
+            <h1>कल्याण राष्ट्रभक्ति-अङ्क</h1>
+            <div class="sub-heading">Kalyan Rashtrabhakti Ank</div>
+            <div class="sub-heading-note">वर्ष १०१ (Year 101) — New Subscriptions Form</div>
+        </div>
+        <img src="https://raw.githubusercontent.com/cloudhostadmin/Kalyan-Subscription---2027/main/Rashtrabhakti_ank.jpeg"
+             alt="कल्याण राष्ट्रभक्ति-अङ्क" class="header-image" id="rightLogo"
+             onerror="this.style.display='none'">
+    </div>
+
+    <!-- ═══════════ STEP 1 : SUBSCRIPTION TYPE ═══════════ -->
+    <div id="step1">
+        <div class="step-title">सदस्यता चुनें / Choose your subscription</div>
+        <div class="step-note">अवधि चुनने के बाद पता एवं सम्पर्क विवरण भरना है।</div>
+
+        <div class="plan-list">
+            <label class="plan-card" for="plan1">
+                <input type="radio" name="plan" id="plan1" value="1YR">
+                <div class="plan-info">
+                    <div class="plan-name">एक वर्ष / One Year</div>
+                    <div class="plan-meta">12 अंक — 1 वर्ष की सदस्यता</div>
+                </div>
+                <div class="plan-price">₹500</div>
+            </label>
+
+            <label class="plan-card" for="plan5">
+                <input type="radio" name="plan" id="plan5" value="5YR">
+                <div class="plan-info">
+                    <div class="plan-name">पाँच वर्ष / Five Years</div>
+                    <div class="plan-meta">60 अंक — 5 वर्ष की सदस्यता</div>
+                </div>
+                <div class="plan-price">₹2500</div>
+            </label>
+        </div>
+
+        <button type="button" id="continueBtn" class="submit-btn" disabled>
+            आगे बढ़ें / Continue
+        </button>
+    </div>
+
+    <!-- ═══════════ STEP 2 : SUBSCRIBER DETAILS ═══════════ -->
+    <form id="kalyanForm" class="hidden">
+
+        <div class="selected-plan-bar">
+            <div>
+                <div class="label">चुनी गई सदस्यता / Selected</div>
+                <div class="value" id="selectedPlanText">—</div>
+            </div>
+            <button type="button" class="change-plan-btn" id="changePlanBtn">बदलें / Change</button>
+        </div>
+
+        <!-- Hidden tracking fields (auto-filled from QR URL) -->
+        <input type="hidden" id="customerId"        name="customerId"        value="">
+        <input type="hidden" id="subscriptionType"  name="subscriptionType"  value="">
+        <input type="hidden" id="subscriptionYears" name="subscriptionYears" value="">
+        <input type="hidden" id="amount"            name="amount"            value="">
+
+        <div class="form-group">
+            <label for="firstName">First Name <span class="required">*</span></label>
+            <input type="text" id="firstName" name="firstName" required placeholder="Enter first name">
+        </div>
+
+        <div class="form-group">
+            <label for="lastName">Last Name <span class="required">*</span></label>
+            <input type="text" id="lastName" name="lastName" required placeholder="Enter last name">
+        </div>
+
+        <div class="form-group">
+            <label for="address1">Address 1 <span class="required">*</span></label>
+            <input type="text" id="address1" name="address1" required maxlength="40" placeholder="House / Flat No., Building">
+            <div class="char-count"><span id="address1Count">0</span>/40</div>
+        </div>
+
+        <div class="form-group">
+            <label for="address2">Address 2 <span class="required">*</span></label>
+            <input type="text" id="address2" name="address2" required maxlength="40" placeholder="Street / Colony / Area">
+            <div class="char-count"><span id="address2Count">0</span>/40</div>
+        </div>
+
+        <div class="form-group">
+            <label for="address3">Address 3</label>
+            <input type="text" id="address3" name="address3" maxlength="40" placeholder="Landmark (optional)">
+            <div class="char-count"><span id="address3Count">0</span>/40</div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="pincode">Pincode <span class="required">*</span></label>
+                <input type="text" id="pincode" name="pincode" required pattern="[0-9]{6}" maxlength="6" placeholder="6-digit" inputmode="numeric">
+                <div id="pincodeStatus" class="pincode-status" style="display:none;"></div>
+            </div>
+            <div class="form-group">
+                <label for="city">City <span class="required">*</span></label>
+                <input type="text" id="city" name="city" required placeholder="Auto-filled">
+            </div>
+            <div class="form-group">
+                <label for="state">State <span class="required">*</span></label>
+                <input type="text" id="state" name="state" required placeholder="Auto-filled">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="mobileNumber">Mobile Number <span class="required">*</span></label>
+            <input type="tel" id="mobileNumber" name="mobileNumber" required
+                   pattern="[0-9]{10}" maxlength="10"
+                   placeholder="10-digit mobile number" inputmode="numeric">
+        </div>
+
+        <div class="form-group">
+            <label for="emailId">Email ID <span class="required">*</span></label>
+            <input type="email" id="emailId" name="emailId" required
+                   placeholder="Receipt aur sadasyata ki suchna yahi bheji jayegi">
+        </div>
+
+        <div class="form-group">
+            <label for="alternateMobile">Alternate Mobile / WhatsApp Number</label>
+            <input type="tel" id="alternateMobile" name="alternateMobile"
+                   placeholder="Enter alternate number (optional)"
+                   pattern="[0-9]{10}" maxlength="10" inputmode="numeric">
+        </div>
+
+        <!-- Remarks hidden by default -->
+        <div class="form-group hidden">
+            <label for="remarks">Remarks</label>
+            <textarea id="remarks" name="remarks" maxlength="200" placeholder="Any remarks..."></textarea>
+            <div class="char-count"><span id="charCount">0</span>/200</div>
+        </div>
+
+        <button type="submit" id="submitBtn" class="submit-btn">
+            Submit &amp; Proceed to Payment
+        </button>
+    </form>
+
+</div>
+<script>
+'use strict';
+
+// ══════════════════════════════════════════════════════════════
+//  ⚙️  STEP 1: PASTE YOUR APPS SCRIPT URL HERE AFTER DEPLOYING
+// ══════════════════════════════════════════════════════════════
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzJsWpIz_YRac1ROsO7QwXACuov2Pi4Z8dWPohF8VsJca7E9bQIPqkxvzmfagK-AFzGUA/exec';
+
+// ══════════════════════════════════════════════════════════════
+//  ⚙️  PLAN DEFINITIONS — display ke liye. Asli amount server
+//      (Apps Script) decide karta hai, isliye yahan chhed-chhad
+//      se koi galat amount charge nahi ho sakta.
+// ══════════════════════════════════════════════════════════════
+const PLANS = {
+    '1YR': { label:'एक वर्ष / One Year — ₹500',     years:1, amount:500  },
+    '5YR': { label:'पाँच वर्ष / Five Years — ₹2500', years:5, amount:2500 }
+};
+// ══════════════════════════════════════════════════════════════
+
+let selectedPlan = '';
+
+// ── URL PARAM READER ──────────────────────────────────────────
+function getParam(name) {
+    let v = new URLSearchParams(window.location.search).get(name);
+    if (!v && window.location.hash)
+        v = new URLSearchParams(window.location.hash.substring(1)).get(name);
+    return v ? decodeURIComponent(v) : '';
+}
+
+// ── PLAN SELECTION (STEP 1) ───────────────────────────────────
+document.querySelectorAll('.plan-card').forEach(card => {
+    const radio = card.querySelector('input[type="radio"]');
+    radio.addEventListener('change', () => {
+        document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        selectedPlan = radio.value;
+        document.getElementById('continueBtn').disabled = false;
+    });
+});
+
+function applyPlan(code) {
+    const p = PLANS[code];
+    if (!p) return;
+    document.getElementById('subscriptionType').value  = code === '1YR' ? '1 Year' : '5 Years';
+    document.getElementById('subscriptionYears').value = p.years;
+    document.getElementById('amount').value            = p.amount;
+    document.getElementById('selectedPlanText').textContent = p.label;
+    document.getElementById('submitBtn').textContent =
+        'Submit & Pay ₹' + p.amount;
+}
+
+document.getElementById('continueBtn').addEventListener('click', () => {
+    if (!selectedPlan) { alert('कृपया सदस्यता अवधि चुनें / Please select a subscription type.'); return; }
+    applyPlan(selectedPlan);
+    document.getElementById('step1').classList.add('hidden');
+    document.getElementById('kalyanForm').classList.remove('hidden');
+    window.scrollTo({ top:0, behavior:'smooth' });
+});
+
+document.getElementById('changePlanBtn').addEventListener('click', () => {
+    document.getElementById('kalyanForm').classList.add('hidden');
+    document.getElementById('step1').classList.remove('hidden');
+    window.scrollTo({ top:0, behavior:'smooth' });
+});
+
+// ── POPULATE FORM FROM QR URL ─────────────────────────────────
+function populateFromUrl() {
+    // Map url param → field id
+    const map = {
+        customerId:'customerId', firstName:'firstName', lastName:'lastName',
+        address1:'address1', address2:'address2', address3:'address3',
+        pincode:'pincode', city:'city', state:'state',
+        mobile:'mobileNumber', mobileNumber:'mobileNumber',
+        email:'emailId', alternateMobile:'alternateMobile',
+    };
+    Object.entries(map).forEach(([param, fieldId]) => {
+        const val = getParam(param);
+        if (val) { const el = document.getElementById(fieldId); if (el && !el.value) el.value = val; }
+    });
+
+    // Pre-select plan from URL (?plan=1YR / 5YR / 1 / 5)
+    let pp = getParam('plan').toUpperCase();
+    if (pp === '1' || pp === '1YEAR') pp = '1YR';
+    if (pp === '5' || pp === '5YEAR') pp = '5YR';
+    if (PLANS[pp]) {
+        const r = document.querySelector('.plan-card input[value="' + pp + '"]');
+        if (r) { r.checked = true; r.dispatchEvent(new Event('change')); }
+    }
+
+    // Custom logo & size
+    const logo = getParam('rightLogo');
+    const sz   = parseInt(getParam('logoSize'));
+    if (logo) document.getElementById('rightLogo').src = logo;
+    if (sz > 0 && sz <= 300)
+        document.documentElement.style.setProperty('--logo-size', sz + 'px');
+
+    // Auto pincode lookup if pincode in URL
+    const pin = document.getElementById('pincode').value;
+    if (pin.length === 6 && !document.getElementById('city').value)
+        fetchPincode(pin);
+}
+
+// ── PINCODE → CITY / STATE ────────────────────────────────────
+async function fetchPincode(pin) {
+    const ps = document.getElementById('pincodeStatus');
+    ps.textContent = '🔍 Fetching location...';
+    ps.className = 'pincode-status loading';
+    ps.style.display = 'block';
+    try {
+        const r = await fetch('https://api.postalpincode.in/pincode/' + pin);
+        const d = await r.json();
+        if (d?.[0]?.Status === 'Success' && d[0].PostOffice?.length) {
+            const po = d[0].PostOffice[0];
+            document.getElementById('city').value  = po.District || po.Block || '';
+            document.getElementById('state').value = po.State || '';
+            ps.textContent = '✅ Location found!'; ps.className = 'pincode-status success';
+            setTimeout(() => ps.style.display = 'none', 3000);
+        } else { throw 0; }
+    } catch {
+        ps.textContent = '❌ Invalid pincode — enter city/state manually';
+        ps.className = 'pincode-status error';
+        setTimeout(() => ps.style.display = 'none', 4000);
+    }
+}
+document.getElementById('pincode').addEventListener('input', function() {
+    if (this.value.length === 6) fetchPincode(this.value);
+    else document.getElementById('pincodeStatus').style.display = 'none';
+});
+
+// ── CHAR COUNTERS ─────────────────────────────────────────────
+[['address1','address1Count'],['address2','address2Count'],['address3','address3Count']].forEach(([id,cid]) => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', () => document.getElementById(cid).textContent = el.value.length);
+    document.getElementById(cid).textContent = el.value.length;
+});
+document.getElementById('remarks').addEventListener('input', function() {
+    document.getElementById('charCount').textContent = this.value.length;
+});
+
+// ── LOADING ───────────────────────────────────────────────────
+function showLoading(msg) {
+    document.getElementById('loadingMessage').textContent = msg;
+    document.getElementById('loadingOverlay').classList.remove('hidden');
+}
+function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
+
+// ── INIT ──────────────────────────────────────────────────────
+populateFromUrl();
+
+
+// ── FORM SUBMIT → APPS SCRIPT (order + hash) → PAYU PAGE ─────
+document.getElementById('kalyanForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    if (!selectedPlan || !PLANS[selectedPlan]) {
+        alert('कृपया सदस्यता अवधि चुनें / Please select a subscription type.');
+        document.getElementById('changePlanBtn').click();
+        return;
+    }
+
+    const mobile = document.getElementById('mobileNumber').value.trim();
+    if (!/^\d{10}$/.test(mobile)) {
+        alert('Please enter a valid 10-digit mobile number.');
+        return;
+    }
+
+    const email = document.getElementById('emailId').value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+        alert('कृपया सही Email ID भरें / Please enter a valid email ID.');
+        document.getElementById('emailId').focus();
+        return;
+    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+    showLoading('विवरण सुरक्षित किया जा रहा है...');
+
+    const payload = {
+        action:            'createOrder',
+        timestamp:         new Date().toISOString(),
+        planCode:          selectedPlan,                                       // server isse amount nikalta hai
+        subscriptionType:  document.getElementById('subscriptionType').value,
+        subscriptionYears: document.getElementById('subscriptionYears').value,
+        customerId:        document.getElementById('customerId').value,
+        firstName:         document.getElementById('firstName').value.trim(),
+        lastName:          document.getElementById('lastName').value.trim(),
+        address1:          document.getElementById('address1').value.trim(),
+        address2:          document.getElementById('address2').value.trim(),
+        address3:          document.getElementById('address3').value.trim(),
+        pincode:           document.getElementById('pincode').value.trim(),
+        city:              document.getElementById('city').value.trim(),
+        state:             document.getElementById('state').value.trim(),
+        mobileNumber:      mobile,
+        emailId:           document.getElementById('emailId').value.trim(),
+        alternateMobile:   document.getElementById('alternateMobile').value.trim(),
+        remarks:           document.getElementById('remarks').value
+    };
+
+    try {
+        // NOTE: text/plain jaan-boojh kar — Apps Script CORS preflight (OPTIONS)
+        // handle nahi karta, application/json bhejne par fetch fail ho jata hai.
+        const res = await fetch(APPS_SCRIPT_URL, {
+            method:  'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body:    JSON.stringify(payload),
+            redirect:'follow'
+        });
+        const data = await res.json();
+
+        if (!data.ok) throw new Error(data.error || 'Order could not be created');
+
+        showLoading('PayU पर भेजा जा रहा है... / Redirecting to PayU');
+        goToPayU(data);
+
+    } catch (err) {
+        hideLoading();
+        alert('भुगतान आरम्भ नहीं हो सका / Could not start payment.\n\n' + err.message +
+              '\n\nकृपया पुनः प्रयास करें।');
+        btn.disabled    = false;
+        btn.textContent = 'Submit & Pay ₹' + PLANS[selectedPlan].amount;
+    }
+});
+
+// ── PayU hosted payment page par POST redirect ────────────────
+function goToPayU(d) {
+    const f = document.createElement('form');
+    f.method = 'POST';
+    f.action = d.payuUrl;
+    Object.keys(d.params).forEach(k => {
+        const i = document.createElement('input');
+        i.type = 'hidden'; i.name = k; i.value = d.params[k];
+        f.appendChild(i);
+    });
+    document.body.appendChild(f);
+    f.submit();
+}
+</script>
+</body>
+</html>
