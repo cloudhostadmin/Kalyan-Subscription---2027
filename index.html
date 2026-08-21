@@ -75,6 +75,12 @@
         .plan-name  { font-size:16px; font-weight:700; color:#333; }
         .plan-meta  { font-size:13px; color:#777; margin-top:4px; }
         .plan-price { font-size:22px; font-weight:700; color:#c17817; white-space:nowrap; }
+        .plan-bonus {
+            font-size:12px; font-weight:600; color:#c17817;
+            background:#fff6e0; border:1px solid #f0dcae;
+            border-radius:5px; padding:4px 8px; margin-top:7px;
+            display:inline-block; line-height:1.35;
+        }
 
         /* plan chunte hi form neeche khulta hai */
         #kalyanForm {
@@ -208,6 +214,7 @@
                 <div class="plan-info">
                     <div class="plan-name" data-i18n="plan1Name">एक वर्ष</div>
                     <div class="plan-meta" data-i18n="plan1Meta">12 अंक — 1 वर्ष की सदस्यता</div>
+                    <div class="plan-bonus" data-i18n="planBonus">+ 3 issues of Oct–Dec 2026 also included</div>
                 </div>
                 <div class="plan-price">₹500</div>
             </label>
@@ -217,6 +224,7 @@
                 <div class="plan-info">
                     <div class="plan-name" data-i18n="plan5Name">पाँच वर्ष</div>
                     <div class="plan-meta" data-i18n="plan5Meta">60 अंक — 5 वर्ष की सदस्यता</div>
+                    <div class="plan-bonus" data-i18n="planBonus">+ 3 issues of Oct–Dec 2026 also included</div>
                 </div>
                 <div class="plan-price">₹2500</div>
             </label>
@@ -342,6 +350,7 @@ const I18N = {
     choosePlan:'सदस्यता चुनें',
     plan1Name:'एक वर्ष',  plan1Meta:'12 अंक — 1 वर्ष की सदस्यता',
     plan5Name:'पाँच वर्ष', plan5Meta:'60 अंक — 5 वर्ष की सदस्यता',
+    planBonus:'+ वर्ष 2026 (अक्टूबर–दिसम्बर) के 3 मासिक अंक भी',
     firstName:'प्रथम नाम', phFirstName:'प्रथम नाम लिखें',
     lastName:'उपनाम',      phLastName:'उपनाम लिखें',
     addr1:'पता 1', phAddr1:'मकान / फ्लैट नं., भवन',
@@ -373,6 +382,7 @@ const I18N = {
     choosePlan:'Choose your subscription',
     plan1Name:'One Year',   plan1Meta:'12 issues — 1 year subscription',
     plan5Name:'Five Years', plan5Meta:'60 issues — 5 year subscription',
+    planBonus:'+ 3 monthly issues of Oct–Dec 2026 also included',
     firstName:'First Name', phFirstName:'Enter first name',
     lastName:'Last Name',   phLastName:'Enter last name',
     addr1:'Address 1', phAddr1:'House / Flat No., Building',
